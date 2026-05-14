@@ -1,0 +1,29 @@
+# Projeto Logify
+
+O Projeto Logify é um sistema desenvolvido em PHP com foco em funcionalidades de backend, sem interface frontend, permitindo o cadastro e gerenciamento de informações por meio do terminal.
+
+## Objetivo
+
+O objetivo do projeto é praticar conceitos de desenvolvimento backend, organização de pastas, conexão com banco de dados e implementação de casos de uso.
+
+## Tecnologias utilizadas
+
+- PHP
+- MySQL
+- GitHub
+
+## Funcionalidades
+
+- Cadastro de usuários
+- Cadastro de projetos
+- Organização das regras de negócio
+- Comunicação com banco de dados
+- Execução de funcionalidades pelo terminal
+
+## Como executar
+
+O projeto deve ser executado localmente utilizando PHP e banco de dados MySQL.
+
+## Status do projeto
+
+Em desenvolvimento.
