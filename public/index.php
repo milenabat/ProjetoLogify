@@ -4,6 +4,7 @@ require_once __DIR__ . '/../app/controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/controllers/ProjetoController.php';
 require_once __DIR__ . '/../app/controllers/LogController.php';
 require_once __DIR__ . '/../app/controllers/FaturaController.php';
+require_once __DIR__ . '/../app/controllers/ApiLogController.php';
 
 $acao = $_GET['acao'] ?? 'inicio';
 
@@ -99,6 +100,10 @@ elseif ($acao == 'cadastrar_fatura') {
 } elseif ($acao == 'excluir_fatura') {
     $faturaController = new FaturaController();
     $faturaController->excluir();
+
+ } elseif ($acao == 'api_receber_log') {
+    $apiLogController = new ApiLogController();
+    $apiLogController->receberLog();
 }else {
     echo "<h1>Bem-vinda ao Logify</h1>";
     echo "<p>Projeto MVC em construção.</p>";
