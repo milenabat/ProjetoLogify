@@ -12,26 +12,30 @@ class Log
         $this->conexao = $conexao;
     }
 
-    public function listarTodos()
-    {
-        $sql = "SELECT l.id_log, l.mensagem, p.nome_projeto 
-                FROM logs_erro l
-                LEFT JOIN projetos p ON l.id_projeto = p.id_projeto
-                ORDER BY l.id_log DESC";
-                
+    public function listarPorProjeto($id_projeto)
+{
+    $sql = "SELECT l.id_log, l.mensagem, p.nome_projeto
+            FROM logs_erro l
+            INNER JOIN projetos p ON l.id_projeto = p.id_projeto
+            WHERE l.id_projeto = ?
+            ORDER BY l.id_log DESC";
 
-        $resultado = $this->conexao->query($sql);
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("i", $id_projeto);
+    $stmt->execute();
 
-        $logs = [];
+    $resultado = $stmt->get_result();
 
-        if ($resultado && $resultado->num_rows > 0) {
-            while ($linha = $resultado->fetch_assoc()) {
-                $logs[] = $linha;
-            }
+    $logs = [];
+
+    if ($resultado && $resultado->num_rows > 0) {
+        while ($linha = $resultado->fetch_assoc()) {
+            $logs[] = $linha;
         }
-
-        return $logs;
     }
+
+    return $logs;
+}
     public function cadastrar($mensagem, $id_projeto)
 {
     $sql = "INSERT INTO logs_erro (mensagem, id_projeto) VALUES (?, ?)";
@@ -66,5 +70,21 @@ public function excluir($id)
     $stmt->bind_param("i", $id);
 
     return $stmt->execute();
+}
+public function contarLogsPorUsuario($id_usuario)
+{
+    $sql = "SELECT COUNT(*) AS total
+            FROM logs_erro l
+            INNER JOIN projetos p ON l.id_projeto = p.id_projeto
+            WHERE p.id_usuario = ?";
+
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+    $linha = $resultado->fetch_assoc();
+
+    return $linha['total'];
 }
 }

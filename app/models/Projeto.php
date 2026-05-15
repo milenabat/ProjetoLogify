@@ -12,30 +12,40 @@ class Projeto
         $this->conexao = $conexao;
     }
 
-    public function listarTodos()
-    {
-        $sql = "SELECT p.id_projeto, p.nome_projeto, u.nome 
-                FROM projetos p
-                LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
-                ORDER BY p.id_projeto DESC";
-
-        $resultado = $this->conexao->query($sql);
-
-        $projetos = [];
-
-        if ($resultado && $resultado->num_rows > 0) {
-            while ($linha = $resultado->fetch_assoc()) {
-                $projetos[] = $linha;
-            }
-        }
-
-        return $projetos;
-    }
-    public function cadastrar($nome_projeto, $id_usuario)
+   public function listarTodos()
 {
-    $sql = "INSERT INTO projetos (nome_projeto, id_usuario) VALUES (?, ?)";
+    $sql = "SELECT 
+                p.id_projeto, 
+                p.nome_projeto, 
+                p.api_key,
+                p.status,
+                u.nome 
+            FROM projetos p
+            LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+            ORDER BY p.id_projeto DESC";
+
+    $resultado = $this->conexao->query($sql);
+
+    $projetos = [];
+
+    if ($resultado && $resultado->num_rows > 0) {
+        while ($linha = $resultado->fetch_assoc()) {
+            $projetos[] = $linha;
+        }
+    }
+
+    return $projetos;
+}
+   public function cadastrar($nome_projeto, $id_usuario)
+{
+    $api_key = "logify_" . bin2hex(random_bytes(16));
+    $status = "ativo";
+
+    $sql = "INSERT INTO projetos (nome_projeto, id_usuario, api_key, status) 
+            VALUES (?, ?, ?, ?)";
+
     $stmt = $this->conexao->prepare($sql);
-    $stmt->bind_param("si", $nome_projeto, $id_usuario);
+    $stmt->bind_param("siss", $nome_projeto, $id_usuario, $api_key, $status);
 
     return $stmt->execute();
 }
@@ -65,5 +75,15 @@ public function excluir($id)
     $stmt->bind_param("i", $id);
 
     return $stmt->execute();
+}
+public function buscarPorApiKey($api_key)
+{
+    $sql = "SELECT * FROM projetos WHERE api_key = ? AND status = 'ativo'";
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("s", $api_key);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+    return $resultado->fetch_assoc();
 }
 }

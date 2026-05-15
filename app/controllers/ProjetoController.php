@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../models/Projeto.php';
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../models/Log.php';
 
 class ProjetoController
 {
@@ -91,6 +92,22 @@ public function excluir()
         }
     } else {
         echo "ID não informado.";
+    }
+}
+public function analisarLogs()
+{
+    if (isset($_GET['id'])) {
+        $id_projeto = $_GET['id'];
+
+        $projetoModel = new Projeto();
+        $logModel = new Log();
+
+        $projeto = $projetoModel->buscarPorId($id_projeto);
+        $logs = $logModel->listarPorProjeto($id_projeto);
+
+        require_once __DIR__ . '/../views/projetos/logs.php';
+    } else {
+        echo "ID do projeto não informado.";
     }
 }
 }

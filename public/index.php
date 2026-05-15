@@ -104,7 +104,12 @@ elseif ($acao == 'cadastrar_fatura') {
  } elseif ($acao == 'api_receber_log') {
     $apiLogController = new ApiLogController();
     $apiLogController->receberLog();
-}else {
+
+} elseif ($acao == 'analisar_logs_projeto') {
+    $projetoController = new ProjetoController();
+    $projetoController->analisarLogs();
+}
+else {
     echo "<h1>Bem-vinda ao Logify</h1>";
     echo "<p>Projeto MVC em construção.</p>";
     echo "<a href='?acao=usuarios'>Ver usuários</a>";
