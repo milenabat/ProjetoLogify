@@ -28,11 +28,20 @@
                     <td><?php echo $fatura['nome']; ?></td>
                     <td>R$ <?php echo $fatura['valor']; ?></td>
                     <td><?php echo $fatura['status']; ?></td>
-                    <td>
+                   <td>
     <a href="/ProjetoLogify/public/?acao=editar_fatura&id=<?php echo $fatura['id_fatura']; ?>">Editar</a> |
+
     <a href="/ProjetoLogify/public/?acao=excluir_fatura&id=<?php echo $fatura['id_fatura']; ?>"
-       onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
+       onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a> |
+
+    <?php if ($fatura['status'] != 'pago'): ?>
+        <a href="/ProjetoLogify/public/?acao=pagar_fatura&id=<?php echo $fatura['id_fatura']; ?>"
+           onclick="return confirm('Deseja marcar esta fatura como paga?')">Marcar como Pago</a>
+    <?php else: ?>
+        Pago
+    <?php endif; ?>
 </td>
+=
                 </tr>
             <?php endforeach; ?>
         </table>

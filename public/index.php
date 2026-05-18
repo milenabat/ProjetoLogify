@@ -5,6 +5,7 @@ require_once __DIR__ . '/../app/controllers/ProjetoController.php';
 require_once __DIR__ . '/../app/controllers/LogController.php';
 require_once __DIR__ . '/../app/controllers/FaturaController.php';
 require_once __DIR__ . '/../app/controllers/ApiLogController.php';
+require_once __DIR__ . '/../app/controllers/PagamentoController.php';
 
 $acao = $_GET['acao'] ?? 'inicio';
 
@@ -29,67 +30,74 @@ if ($acao == 'usuarios') {
     $controller->excluir();
 
 } elseif ($acao == 'projetos') {
-
     $projetoController = new ProjetoController();
     $projetoController->listar();
-    }elseif ($acao == 'cadastrar_projeto') {
+
+} elseif ($acao == 'cadastrar_projeto') {
     $projetoController = new ProjetoController();
     $projetoController->abrirFormularioCadastro();
 
 } elseif ($acao == 'salvar_projeto') {
     $projetoController = new ProjetoController();
     $projetoController->salvar();
-}
-elseif ($acao == 'editar_projeto') {
+
+} elseif ($acao == 'editar_projeto') {
     $projetoController = new ProjetoController();
     $projetoController->editar();
 
 } elseif ($acao == 'atualizar_projeto') {
     $projetoController = new ProjetoController();
     $projetoController->atualizar();
-}
-elseif ($acao == 'excluir_projeto') {
+
+} elseif ($acao == 'excluir_projeto') {
     $projetoController = new ProjetoController();
     $projetoController->excluir();
-}
-elseif ($acao == 'logs') {
+
+} elseif ($acao == 'analisar_logs_projeto') {
+    $projetoController = new ProjetoController();
+    $projetoController->analisarLogs();
+
+} elseif ($acao == 'logs') {
     $logController = new LogController();
     $logController->listar();
-}
-elseif ($acao == 'cadastrar_log') {
+
+} elseif ($acao == 'cadastrar_log') {
     $logController = new LogController();
     $logController->abrirFormularioCadastro();
 
 } elseif ($acao == 'salvar_log') {
     $logController = new LogController();
     $logController->salvar();
-}
-elseif ($acao == 'editar_log') {
+
+} elseif ($acao == 'editar_log') {
     $logController = new LogController();
     $logController->editar();
 
 } elseif ($acao == 'atualizar_log') {
     $logController = new LogController();
     $logController->atualizar();
-}
-elseif ($acao == 'excluir_log') {
+
+} elseif ($acao == 'excluir_log') {
     $logController = new LogController();
     $logController->excluir();
 
-}
-elseif ($acao == 'faturas') {
+} elseif ($acao == 'api_receber_log') {
+    $apiLogController = new ApiLogController();
+    $apiLogController->receberLog();
+
+} elseif ($acao == 'faturas') {
     $faturaController = new FaturaController();
     $faturaController->listar();
-}
-elseif ($acao == 'cadastrar_fatura') {
+
+} elseif ($acao == 'cadastrar_fatura') {
     $faturaController = new FaturaController();
     $faturaController->abrirFormularioCadastro();
 
 } elseif ($acao == 'salvar_fatura') {
     $faturaController = new FaturaController();
     $faturaController->salvar();
-}
- elseif ($acao == 'editar_fatura') {
+
+} elseif ($acao == 'editar_fatura') {
     $faturaController = new FaturaController();
     $faturaController->editar();
 
@@ -101,15 +109,15 @@ elseif ($acao == 'cadastrar_fatura') {
     $faturaController = new FaturaController();
     $faturaController->excluir();
 
- } elseif ($acao == 'api_receber_log') {
-    $apiLogController = new ApiLogController();
-    $apiLogController->receberLog();
+} elseif ($acao == 'pagar_fatura') {
+    $faturaController = new FaturaController();
+    $faturaController->pagar();
 
-} elseif ($acao == 'analisar_logs_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->analisarLogs();
-}
-else {
+} elseif ($acao == 'webhook_pagamento') {
+    $pagamentoController = new PagamentoController();
+    $pagamentoController->webhook();
+
+} else {
     echo "<h1>Bem-vinda ao Logify</h1>";
     echo "<p>Projeto MVC em construção.</p>";
     echo "<a href='?acao=usuarios'>Ver usuários</a>";

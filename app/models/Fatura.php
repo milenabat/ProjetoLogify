@@ -66,4 +66,12 @@ public function excluir($id)
 
     return $stmt->execute();
 }
+public function marcarComoPago($id_fatura)
+{
+    $sql = "UPDATE faturas SET status = 'pago' WHERE id_fatura = ?";
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("i", $id_fatura);
+
+    return $stmt->execute();
+}
 }

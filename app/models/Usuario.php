@@ -56,11 +56,44 @@ public function atualizar($id, $nome, $email, $senha, $plano)
 
     return $stmt->execute();
 }
+public function contarProjetos($id_usuario)
+{
+    $sql = "SELECT COUNT(*) AS total FROM projetos WHERE id_usuario = ?";
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+    $linha = $resultado->fetch_assoc();
+
+    return $linha['total'];
+}
+
+public function contarFaturas($id_usuario)
+{
+    $sql = "SELECT COUNT(*) AS total FROM faturas WHERE id_usuario = ?";
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+    $linha = $resultado->fetch_assoc();
+
+    return $linha['total'];
+}
 public function excluir($id)
 {
     $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
     $stmt = $this->conexao->prepare($sql);
     $stmt->bind_param("i", $id);
+
+    return $stmt->execute();
+}
+public function atualizarPlano($id_usuario, $plano)
+{
+    $sql = "UPDATE usuarios SET plano = ? WHERE id_usuario = ?";
+    $stmt = $this->conexao->prepare($sql);
+    $stmt->bind_param("si", $plano, $id_usuario);
 
     return $stmt->execute();
 }

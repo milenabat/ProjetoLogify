@@ -81,6 +81,17 @@ public function excluir()
         $id = $_GET['id'];
 
         $usuarioModel = new Usuario();
+
+        $totalProjetos = $usuarioModel->contarProjetos($id);
+        $totalFaturas = $usuarioModel->contarFaturas($id);
+
+        if ($totalProjetos > 0 || $totalFaturas > 0) {
+            echo "Não é possível excluir este usuário, pois ele possui projetos ou faturas vinculadas.";
+            echo "<br><br>";
+            echo "<a href='/ProjetoLogify/public/?acao=usuarios'>Voltar para usuários</a>";
+            return;
+        }
+
         $sucesso = $usuarioModel->excluir($id);
 
         if ($sucesso) {
