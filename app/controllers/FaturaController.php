@@ -149,4 +149,30 @@ class FaturaController
             echo "ID da fatura não informado.";
         }
     }
+    public function gerarPagamento($id_fatura)
+{
+    $faturaModel = new Fatura();
+    $fatura = $faturaModel->buscarPorId($id_fatura);
+
+    if (!$fatura) {
+        echo "Fatura não encontrada";
+        return;
+    }
+
+    require_once __DIR__ . '/../services/MercadoPagoService.php';
+
+    $mp = new MercadoPagoService();
+
+    $resposta = $mp->criarPagamento(
+        $fatura['valor'],
+        "Fatura Logify #" . $id_fatura
+    );
+
+    if (isset($resposta['init_point'])) {
+        header("Location: " . $resposta['init_point']);
+        exit;
+    } else {
+        echo "Erro ao gerar pagamento";
+    }
+}
 }
