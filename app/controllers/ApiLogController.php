@@ -6,59 +6,57 @@ require_once __DIR__ . '/../models/Usuario.php';
 
 class ApiLogController
 {
-    public function receberLog()
-    {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $api_key = $_POST['api_key'] ?? null;
-            $mensagem = $_POST['mensagem'] ?? null;
-
-            if (empty($api_key) || empty($mensagem)) {
-                echo "Erro: api_key e mensagem são obrigatórios.";
-                return;
-            }
-
-            $projetoModel = new Projeto();
-            $projeto = $projetoModel->buscarPorApiKey($api_key);
-
-            if (!$projeto) {
-                echo "Erro: API Key inválida ou projeto inativo.";
-                return;
-            }
-
-            $id_projeto = $projeto['id_projeto'];
-            $id_usuario = $projeto['id_usuario'];
-
-            $usuarioModel = new Usuario();
-            $usuario = $usuarioModel->buscarPorId($id_usuario);
-
-            if (!$usuario) {
-                echo "Erro: usuário responsável pelo projeto não encontrado.";
-                return;
-            }
-
-            $logModel = new Log();
-
-            $plano = strtolower($usuario['plano']);
-            $limiteFree = 3;
-
-            if ($plano == 'free') {
-                $totalLogs = $logModel->contarLogsPorUsuario($id_usuario);
-
-                if ($totalLogs >= $limiteFree) {
-                    echo "Log bloqueado: limite do plano Free atingido. Faça upgrade para o plano Pro.";
-                    return;
-                }
-            }
-
-            $sucesso = $logModel->cadastrar($mensagem, $id_projeto);
-
-            if ($sucesso) {
-                echo "Log recebido e salvo com sucesso!";
-            } else {
-                echo "Erro ao salvar log.";
-            }
-        } else {
-            echo "Essa rota aceita apenas requisições POST.";
-        }
+  public function receberLog()
+{
+    if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        echo "Método inválido";
+        return;
     }
+
+    $api_key = $_POST['api_key'] ?? null;
+    $mensagem = $_POST['mensagem'] ?? null;
+
+    if (!$api_key || !$mensagem) {
+        echo "api_key e mensagem são obrigatórios";
+        return;
+    }
+
+    $projetoModel = new Projeto();
+    $usuarioModel = new Usuario();
+    $logModel = new Log();
+
+    // 1. validar API KEY
+    $projeto = $projetoModel->buscarPorApiKey($api_key);
+
+    if (!$projeto) {
+        echo "API Key inválida";
+        return;
+    }
+
+    // 2. pegar usuário dono do projeto
+    $usuario = $usuarioModel->buscarPorId($projeto['id_usuario']);
+
+    if (!$usuario) {
+        echo "Usuário não encontrado";
+        return;
+    }
+
+    // 3. contar logs do usuário
+    $totalLogs = $logModel->contarLogsPorUsuario($usuario['id_usuario']);
+
+    // 4. regra de negócio (AUTOMAÇÃO REAL)
+    if ($usuario['plano'] == 'Free' && $totalLogs >= 5) {
+        echo "Limite de logs atingido. Faça upgrade para Pro.";
+        return;
+    }
+
+    // 5. salvar log automaticamente
+    $sucesso = $logModel->cadastrar($mensagem, $projeto['id_projeto']);
+
+    if ($sucesso) {
+        echo "Log registrado com sucesso";
+    } else {
+        echo "Erro ao salvar log";
+    }
+}
 }

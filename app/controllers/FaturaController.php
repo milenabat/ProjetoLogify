@@ -36,17 +36,15 @@ class FaturaController
 
             if ($sucesso) {
 
-                // se já nascer como pago
                 if ($status == 'pago') {
                     $usuarioModel->atualizarPlano($id_usuario, 'Pro');
                 }
 
                 header("Location: /ProjetoLogify/public/?acao=faturas");
                 exit;
-
-            } else {
-                echo "Erro ao cadastrar fatura.";
             }
+
+            echo "Erro ao cadastrar fatura.";
         }
     }
 
@@ -85,17 +83,15 @@ class FaturaController
 
             if ($sucesso) {
 
-                // REGRA AUTOMÁTICA
                 if ($status == 'pago') {
                     $usuarioModel->atualizarPlano($id_usuario, 'Pro');
                 }
 
                 header("Location: /ProjetoLogify/public/?acao=faturas");
                 exit;
-
-            } else {
-                echo "Erro ao atualizar fatura.";
             }
+
+            echo "Erro ao atualizar fatura.";
         }
     }
 
@@ -138,64 +134,71 @@ class FaturaController
             if ($sucesso) {
                 header("Location: /ProjetoLogify/public/?acao=faturas");
                 exit;
-            } else {
-                echo "Erro ao excluir fatura.";
             }
 
+            echo "Erro ao excluir fatura.";
         } else {
             echo "ID da fatura não informado.";
         }
     }
 
-    public function gerarPagamento($id_fatura)
-    {
-        $faturaModel = new Fatura();
-        $fatura = $faturaModel->buscarPorId($id_fatura);
+   public function gerarPagamento($id_fatura)
+{
+    $faturaModel = new Fatura();
+    $fatura = $faturaModel->buscarPorId($id_fatura);
 
-        if (!$fatura) {
-            echo "Fatura não encontrada";
-            return;
-        }
-
-        $preference = [
-            "items" => [
-                [
-                    "title" => "Plano Pro Logify",
-                    "quantity" => 1,
-                    "unit_price" => (float)$fatura['valor']
-                ]
-            ],
-            "external_reference" => $id_fatura,
-            "back_urls" => [
-                "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
-                "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
-                "pending" => "http://localhost/ProjetoLogify/public/?acao=faturas"
-            ],
-            "auto_return" => "approved"
-        ];
-
-        $config = require __DIR__ . '/../config/mercadopago.php';
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.mercadopago.com/checkout/preferences");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Authorization: Bearer " . $config['access_token'],
-            "Content-Type: application/json"
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($preference));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $data = json_decode($response, true);
-
-        if (isset($data['init_point'])) {
-            header("Location: " . $data['init_point']);
-            exit;
-        } else {
-            echo "Erro ao gerar pagamento";
-        }
+    if (!$fatura) {
+        echo "Fatura não encontrada";
+        return;
     }
-}
+
+    $preference = [
+        "items" => [
+            [
+                "title" => "Plano Pro Logify",
+                "quantity" => 1,
+                "unit_price" => (float)$fatura['valor']
+            ]
+        ],
+        "external_reference" => $id_fatura,
+        "back_urls" => [
+            "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+            "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+            "pending" => "http://localhost/ProjetoLogify/public/?acao=faturas"
+        ],
+        // remove auto_return
+    ];
+
+    $config = require __DIR__ . '/../config/mercadopago.php';
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, "https://api.mercadopago.com/checkout/preferences");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer " . $config['access_token'],
+        "Content-Type: application/json"
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($preference));
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo "Erro CURL: " . curl_error($ch);
+        curl_close($ch);
+        return;
+    }
+
+    curl_close($ch);
+
+    $data = json_decode($response, true);
+
+    if (isset($data['init_point'])) {
+        header("Location: " . $data['init_point']);
+        exit;
+    }
+
+    echo "<pre>";
+    print_r($response);
+}}
