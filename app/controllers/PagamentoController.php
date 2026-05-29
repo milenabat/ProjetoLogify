@@ -76,4 +76,5 @@ class PagamentoController
 
         echo "Pagamento processado com sucesso! Usuário atualizado para Pro.";
     }
+    
 }

@@ -24,6 +24,7 @@ class FaturaController
     public function salvar()
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
             $id_usuario = $_POST['id_usuario'];
             $valor = $_POST['valor'];
             $status = $_POST['status'];
@@ -34,12 +35,15 @@ class FaturaController
             $sucesso = $faturaModel->cadastrar($id_usuario, $valor, $status);
 
             if ($sucesso) {
+
+                // se já nascer como pago
                 if ($status == 'pago') {
                     $usuarioModel->atualizarPlano($id_usuario, 'Pro');
                 }
 
                 header("Location: /ProjetoLogify/public/?acao=faturas");
                 exit;
+
             } else {
                 echo "Erro ao cadastrar fatura.";
             }
@@ -49,6 +53,7 @@ class FaturaController
     public function editar()
     {
         if (isset($_GET['id'])) {
+
             $id = $_GET['id'];
 
             $faturaModel = new Fatura();
@@ -58,51 +63,46 @@ class FaturaController
             $usuarios = $usuarioModel->listarTodos();
 
             require_once __DIR__ . '/../views/faturas/editar.php';
+
         } else {
             echo "ID da fatura não informado.";
         }
     }
 
     public function atualizar()
-{
-    echo "CHEGUEI NO MÉTODO ATUALIZAR FATURA<br>";
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $id_fatura = $_POST['id_fatura'];
-        $id_usuario = $_POST['id_usuario'];
-        $valor = $_POST['valor'];
-        $status = $_POST['status'];
+            $id_fatura = $_POST['id_fatura'];
+            $id_usuario = $_POST['id_usuario'];
+            $valor = $_POST['valor'];
+            $status = $_POST['status'];
 
-        echo "ID Fatura: " . $id_fatura . "<br>";
-        echo "ID Usuário: " . $id_usuario . "<br>";
-        echo "Valor: " . $valor . "<br>";
-        echo "Status recebido: " . $status . "<br>";
+            $faturaModel = new Fatura();
+            $usuarioModel = new Usuario();
 
-        $faturaModel = new Fatura();
-        $usuarioModel = new Usuario();
+            $sucesso = $faturaModel->atualizar($id_fatura, $id_usuario, $valor, $status);
 
-        $sucesso = $faturaModel->atualizar($id_fatura, $id_usuario, $valor, $status);
+            if ($sucesso) {
 
-        echo "Fatura atualizada? " . ($sucesso ? "SIM" : "NÃO") . "<br>";
+                // REGRA AUTOMÁTICA
+                if ($status == 'pago') {
+                    $usuarioModel->atualizarPlano($id_usuario, 'Pro');
+                }
 
-        if ($status == 'pago') {
-            echo "ENTROU NA REGRA DE PLANO PRO<br>";
+                header("Location: /ProjetoLogify/public/?acao=faturas");
+                exit;
 
-            $atualizouUsuario = $usuarioModel->atualizarPlano($id_usuario, 'Pro');
-
-            echo "Usuário atualizado para Pro? " . ($atualizouUsuario ? "SIM" : "NÃO") . "<br>";
-        } else {
-            echo "NÃO entrou na regra porque status não é pago<br>";
+            } else {
+                echo "Erro ao atualizar fatura.";
+            }
         }
-
-        exit;
-    } else {
-        echo "Não veio via POST.";
     }
-}
+
     public function pagar()
     {
         if (isset($_GET['id'])) {
+
             $id_fatura = $_GET['id'];
 
             $faturaModel = new Fatura();
@@ -115,17 +115,12 @@ class FaturaController
                 return;
             }
 
-            $sucessoFatura = $faturaModel->marcarComoPago($id_fatura);
+            $faturaModel->marcarComoPago($id_fatura);
+            $usuarioModel->atualizarPlano($fatura['id_usuario'], 'Pro');
 
-            if ($sucessoFatura) {
-                $id_usuario = $fatura['id_usuario'];
-                $usuarioModel->atualizarPlano($id_usuario, 'Pro');
+            header("Location: /ProjetoLogify/public/?acao=faturas");
+            exit;
 
-                header("Location: /ProjetoLogify/public/?acao=faturas");
-                exit;
-            } else {
-                echo "Erro ao marcar fatura como paga.";
-            }
         } else {
             echo "ID da fatura não informado.";
         }
@@ -134,6 +129,7 @@ class FaturaController
     public function excluir()
     {
         if (isset($_GET['id'])) {
+
             $id = $_GET['id'];
 
             $faturaModel = new Fatura();
@@ -145,34 +141,61 @@ class FaturaController
             } else {
                 echo "Erro ao excluir fatura.";
             }
+
         } else {
             echo "ID da fatura não informado.";
         }
     }
+
     public function gerarPagamento($id_fatura)
-{
-    $faturaModel = new Fatura();
-    $fatura = $faturaModel->buscarPorId($id_fatura);
+    {
+        $faturaModel = new Fatura();
+        $fatura = $faturaModel->buscarPorId($id_fatura);
 
-    if (!$fatura) {
-        echo "Fatura não encontrada";
-        return;
+        if (!$fatura) {
+            echo "Fatura não encontrada";
+            return;
+        }
+
+        $preference = [
+            "items" => [
+                [
+                    "title" => "Plano Pro Logify",
+                    "quantity" => 1,
+                    "unit_price" => (float)$fatura['valor']
+                ]
+            ],
+            "external_reference" => $id_fatura,
+            "back_urls" => [
+                "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+                "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+                "pending" => "http://localhost/ProjetoLogify/public/?acao=faturas"
+            ],
+            "auto_return" => "approved"
+        ];
+
+        $config = require __DIR__ . '/../config/mercadopago.php';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://api.mercadopago.com/checkout/preferences");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer " . $config['access_token'],
+            "Content-Type: application/json"
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($preference));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $data = json_decode($response, true);
+
+        if (isset($data['init_point'])) {
+            header("Location: " . $data['init_point']);
+            exit;
+        } else {
+            echo "Erro ao gerar pagamento";
+        }
     }
-
-    require_once __DIR__ . '/../services/MercadoPagoService.php';
-
-    $mp = new MercadoPagoService();
-
-    $resposta = $mp->criarPagamento(
-        $fatura['valor'],
-        "Fatura Logify #" . $id_fatura
-    );
-
-    if (isset($resposta['init_point'])) {
-        header("Location: " . $resposta['init_point']);
-        exit;
-    } else {
-        echo "Erro ao gerar pagamento";
-    }
-}
 }

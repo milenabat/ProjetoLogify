@@ -64,6 +64,8 @@
 <?php else: ?>
     <p>Nenhuma fatura encontrada.</p>
 <?php endif; ?>
-
+<a href="?acao=gerar_pagamento&id=<?= $fatura['id_fatura'] ?>">
+    💳 Pagar com Mercado Pago
+</a>
 </body>
 </html>

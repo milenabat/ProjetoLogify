@@ -125,7 +125,11 @@ elseif ($acao == 'gerar_pagamento') {
 elseif ($acao == 'webhook_pagamento_mp') {
     $pagamentoController = new PagamentoController();
     $pagamentoController->webhookMP();
-}else {
+}elseif ($acao == 'gerar_pagamento') {
+    $faturaController = new FaturaController();
+    $faturaController->gerarPagamento($_GET['id']);
+}
+else {
     echo "<h1>Bem-vinda ao Logify</h1>";
     echo "<p>Projeto MVC em construção.</p>";
     echo "<a href='?acao=usuarios'>Ver usuários</a>";
