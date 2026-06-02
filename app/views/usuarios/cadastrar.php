@@ -1,33 +1,38 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Usuário - Logify</title>
-</head>
-<body>
-    <h1>Cadastrar Usuário</h1>
+<?php include __DIR__ . '/../layout/header.php'; ?>
 
-    <form action="/ProjetoLogify/public/?acao=salvar_usuario" method="POST">
-        <label>Nome:</label><br>
-        <input type="text" name="nome" required><br><br>
+<div class="cabecalho-pagina" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <h2>Cadastrar Novo Usuário</h2>
+    <a href="/ProjetoLogify/public/?acao=usuarios" class="btn" style="background: #334155; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar</a>
+</div>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+<div class="form-card" style="background: #1e293b; padding: 30px; border-radius: 8px; max-width: 500px;">
+    <form action="/ProjetoLogify/public/?acao=salvar_usuario" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Nome:</label>
+            <input type="text" name="nome" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+        </div>
 
-        <label>Senha:</label><br>
-        <input type="text" name="senha" required><br><br>
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Email:</label>
+            <input type="email" name="email" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+        </div>
 
-        <label>Plano:</label><br>
-        <select name="plano" required>
-            <option value="">Selecione</option>
-            <option value="Free">Free</option>
-            <option value="Pro">Pro</option>
-        </select><br><br>
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Senha:</label>
+            <input type="password" name="senha" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+        </div>
 
-        <button type="submit">Cadastrar</button>
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Plano:</label>
+            <select name="plano" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+                <option value="Free">Free</option>
+                <option value="Pro">Pro</option>
+            </select>
+        </div>
+
+        <button type="submit" style="background: #38bdf8; color: black; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Salvar Usuário</button>
     </form>
+</div>
 
-    <br>
-    <a href="/ProjetoLogify/public/?acao=usuarios">Voltar para a lista</a>
-</body>
-</html>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

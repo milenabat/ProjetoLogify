@@ -1,33 +1,32 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Log</title>
-</head>
-<body>
-    <h1>Cadastrar Log de Erro</h1>
+<?php include __DIR__ . '/../layout/header.php'; ?>
 
-    <form action="/ProjetoLogify/public/?acao=salvar_log" method="POST">
+<div class="cabecalho-pagina" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <h2>Registrar Log Manual</h2>
+    <a href="/ProjetoLogify/public/?acao=logs" class="btn" style="background: #334155; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">Voltar</a>
+</div>
 
-        <label>Mensagem:</label><br>
-        <textarea name="mensagem" required></textarea><br><br>
+<div class="form-card" style="background: #1e293b; padding: 30px; border-radius: 8px; max-width: 500px;">
+    <form action="/ProjetoLogify/public/?acao=salvar_log" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Projeto Relacionado:</label>
+            <select name="id_projeto" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white;">
+                <option value="">Selecione o projeto</option>
+                <?php foreach ($projetos as $projeto): ?>
+                    <option value="<?php echo $projeto['id_projeto']; ?>">
+                        <?php echo htmlspecialchars($projeto['nome_projeto']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-        <label>Projeto:</label><br>
-        <select name="id_projeto" required>
-            <option value="">Selecione</option>
+        <div>
+            <label style="color: #38bdf8; font-weight: bold; margin-bottom: 5px; display: block;">Mensagem de Erro / Informação:</label>
+            <textarea name="mensagem" required rows="5" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; resize: vertical;"></textarea>
+        </div>
 
-            <?php foreach ($projetos as $projeto): ?>
-                <option value="<?php echo $projeto['id_projeto']; ?>">
-                    <?php echo $projeto['nome_projeto']; ?>
-                </option>
-            <?php endforeach; ?>
-
-        </select><br><br>
-
-        <button type="submit">Cadastrar</button>
+        <button type="submit" style="background: #38bdf8; color: black; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Salvar Log</button>
     </form>
+</div>
 
-    <br>
-    <a href="/ProjetoLogify/public/?acao=logs">Voltar</a>
-</body>
-</html>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

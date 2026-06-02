@@ -130,10 +130,6 @@ elseif ($acao == 'webhook_pagamento_mp') {
     $faturaController->gerarPagamento($_GET['id']);
 }
 else {
-    echo "<h1>Bem-vinda ao Logify</h1>";
-    echo "<p>Projeto MVC em construção.</p>";
-    echo "<a href='?acao=usuarios'>Ver usuários</a>";
-    echo "<br><a href='?acao=projetos'>Ver projetos</a>";
-    echo "<br><a href='?acao=logs'>Ver logs</a>";
-    echo "<br><a href='?acao=faturas'>Ver faturas</a>";
+    // Isso é o que faz a tela inicial puxar o seu home.php estilizado!
+    require_once __DIR__ . '/../app/views/home.php'; 
 }
