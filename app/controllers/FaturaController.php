@@ -142,7 +142,7 @@ class FaturaController
         }
     }
 
-   public function gerarPagamento($id_fatura)
+ public function gerarPagamento(int $id_fatura)
 {
     $faturaModel = new Fatura();
     $fatura = $faturaModel->buscarPorId($id_fatura);
@@ -160,13 +160,12 @@ class FaturaController
                 "unit_price" => (float)$fatura['valor']
             ]
         ],
-        "external_reference" => $id_fatura,
+        "external_reference" => (string)$id_fatura,
         "back_urls" => [
             "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
             "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
             "pending" => "http://localhost/ProjetoLogify/public/?acao=faturas"
-        ],
-        // remove auto_return
+        ]
     ];
 
     $config = require __DIR__ . '/../config/mercadopago.php';
@@ -192,13 +191,12 @@ class FaturaController
 
     curl_close($ch);
 
-    $data = json_decode($response, true);
+  $data = json_decode($response, true);
 
-    if (isset($data['init_point'])) {
-        header("Location: " . $data['init_point']);
-        exit;
-    }
+if (isset($data['sandbox_init_point'])) {
+    header("Location: " . $data['sandbox_init_point']);
+    exit;
+}
 
-    echo "<pre>";
-    print_r($response);
-}}
+echo "<pre>";
+print_r($data);}}
