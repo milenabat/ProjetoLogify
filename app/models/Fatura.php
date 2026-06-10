@@ -73,5 +73,4 @@ public function marcarComoPago($id_fatura)
     $stmt->bind_param("i", $id_fatura);
 
     return $stmt->execute();
-}
-}
+}}

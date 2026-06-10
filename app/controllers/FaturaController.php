@@ -160,7 +160,9 @@ class FaturaController
                 "unit_price" => (float)$fatura['valor']
             ]
         ],
+
         "external_reference" => (string)$id_fatura,
+
         "back_urls" => [
             "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
             "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
@@ -191,12 +193,25 @@ class FaturaController
 
     curl_close($ch);
 
-  $data = json_decode($response, true);
+    $data = json_decode($response, true);
 
-if (isset($data['sandbox_init_point'])) {
-    header("Location: " . $data['sandbox_init_point']);
+    if (isset($data['sandbox_init_point'])) {
+        header("Location: " . $data['sandbox_init_point']);
+        exit;
+    }
+
+    echo "<pre>";
+    print_r($data);
     exit;
+    $preference->back_urls = array(
+    "success" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+    "failure" => "http://localhost/ProjetoLogify/public/?acao=faturas",
+    "pending" => "http://localhost/ProjetoLogify/public/?acao=faturas"
+);
+
+$preference->auto_return = "approved";
 }
 
-echo "<pre>";
-print_r($data);}}
+
+
+}

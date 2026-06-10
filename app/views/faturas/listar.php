@@ -37,9 +37,13 @@
                             
                             <a href="/ProjetoLogify/public/?acao=excluir_fatura&id=<?php echo $fatura['id_fatura']; ?>" style="color: #ef4444; margin-right: 15px; text-decoration: none;" onclick="return confirm('Excluir esta fatura?')">Excluir</a>
 
-                            <?php if ($fatura['status'] != 'pago'): ?>
-                                <a href="/ProjetoLogify/public/?acao=gerar_pagamento&id=<?php echo $fatura['id_fatura']; ?>" style="background: #009ee3; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;">💳 Pagar</a>
-                            <?php endif; ?>
+                            <?php if ($fatura['status'] == 'pendente'): ?>
+    <a href="?acao=gerar_pagamento&id=<?= $fatura['id_fatura'] ?>">
+        Pagar
+    </a>
+<?php else: ?>
+    <span style="color: green;">Pago</span>
+<?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
