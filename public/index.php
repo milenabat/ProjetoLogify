@@ -1,135 +1,145 @@
 <?php
+session_start();
 
+/* =========================
+   CONTROLLERS
+========================= */
 require_once __DIR__ . '/../app/controllers/UsuarioController.php';
 require_once __DIR__ . '/../app/controllers/ProjetoController.php';
 require_once __DIR__ . '/../app/controllers/LogController.php';
 require_once __DIR__ . '/../app/controllers/FaturaController.php';
 require_once __DIR__ . '/../app/controllers/ApiLogController.php';
 require_once __DIR__ . '/../app/controllers/PagamentoController.php';
+require_once __DIR__ . '/../app/controllers/AuthController.php';
 
-$acao = $_GET['acao'] ?? 'inicio';
+/* =========================
+   ROTA PADRÃO CORRETA
+========================= */
+$acao = $_GET['acao'] ?? 'home';
 
-$controller = new UsuarioController();
-
-if ($acao == 'usuarios') {
-    $controller->listar();
-
-} elseif ($acao == 'cadastrar_usuario') {
-    $controller->abrirFormularioCadastro();
-
-} elseif ($acao == 'salvar_usuario') {
-    $controller->salvar();
-
-} elseif ($acao == 'editar_usuario') {
-    $controller->editar();
-
-} elseif ($acao == 'atualizar_usuario') {
-    $controller->atualizar();
-
-} elseif ($acao == 'excluir_usuario') {
-    $controller->excluir();
-
-} elseif ($acao == 'projetos') {
-    $projetoController = new ProjetoController();
-    $projetoController->listar();
-
-} elseif ($acao == 'cadastrar_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->abrirFormularioCadastro();
-
-} elseif ($acao == 'salvar_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->salvar();
-
-} elseif ($acao == 'editar_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->editar();
-
-} elseif ($acao == 'atualizar_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->atualizar();
-
-} elseif ($acao == 'excluir_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->excluir();
-
-} elseif ($acao == 'analisar_logs_projeto') {
-    $projetoController = new ProjetoController();
-    $projetoController->analisarLogs();
-
-} elseif ($acao == 'logs') {
-    $logController = new LogController();
-    $logController->listar();
-
-} elseif ($acao == 'cadastrar_log') {
-    $logController = new LogController();
-    $logController->abrirFormularioCadastro();
-
-} elseif ($acao == 'salvar_log') {
-    $logController = new LogController();
-    $logController->salvar();
-
-} elseif ($acao == 'editar_log') {
-    $logController = new LogController();
-    $logController->editar();
-
-} elseif ($acao == 'atualizar_log') {
-    $logController = new LogController();
-    $logController->atualizar();
-
-} elseif ($acao == 'excluir_log') {
-    $logController = new LogController();
-    $logController->excluir();
-
-} elseif ($acao == 'api_receber_log') {
-    $apiLogController = new ApiLogController();
-    $apiLogController->receberLog();
-
-} elseif ($acao == 'faturas') {
-    $faturaController = new FaturaController();
-    $faturaController->listar();
-
-} elseif ($acao == 'cadastrar_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->abrirFormularioCadastro();
-
-} elseif ($acao == 'salvar_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->salvar();
-
-} elseif ($acao == 'editar_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->editar();
-
-} elseif ($acao == 'atualizar_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->atualizar();
-
-} elseif ($acao == 'excluir_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->excluir();
-
-} elseif ($acao == 'pagar_fatura') {
-    $faturaController = new FaturaController();
-    $faturaController->pagar();
-
-} elseif ($acao == 'webhook_pagamento') {
-    $pagamentoController = new PagamentoController();
-    $pagamentoController->webhook();
-
-} 
-elseif ($acao == 'gerar_pagamento') {
-    $faturaController = new FaturaController();
-    $faturaController->gerarPagamento($_GET['id']);
+/* =========================
+   AUTH
+========================= */
+if ($acao === 'login') {
+    (new AuthController())->login();
+    exit;
 }
-elseif ($acao == 'webhook_pagamento_mp') {
-    $pagamentoController = new PagamentoController();
-    $pagamentoController->webhookMP();
-}elseif ($acao == 'gerar_pagamento') {
-    $faturaController = new FaturaController();
-    $faturaController->gerarPagamento($_GET['id']);
+
+if ($acao === 'autenticar') {
+    (new AuthController())->autenticar();
+    exit;
 }
-else {
-    // Isso é o que faz a tela inicial puxar o seu home.php estilizado!
-    require_once __DIR__ . '/../app/views/home.php'; 
+
+if ($acao === 'logout') {
+    (new AuthController())->logout();
+    exit;
+}
+
+/* =========================
+   ADMIN (SEPARADO)
+========================= */
+if ($acao === 'admin_dashboard') {
+    require_once __DIR__ . '/../app/controllers/admin/AdminController.php';
+    (new AdminController())->dashboard();
+    exit;
+}
+
+if ($acao === 'admin_faturas') {
+    require_once __DIR__ . '/../app/controllers/admin/AdminController.php';
+    (new AdminController())->faturas();
+    exit;
+}
+
+if ($acao === 'admin_comprovantes') {
+    require_once __DIR__ . '/../app/controllers/admin/AdminController.php';
+    (new AdminController())->comprovantes();
+    exit;
+}
+
+/* =========================
+   USUÁRIO
+========================= */
+if ($acao === 'usuarios') {
+    (new UsuarioController())->listar();
+
+} elseif ($acao === 'cadastrar_usuario') {
+    (new UsuarioController())->abrirFormularioCadastro();
+
+} elseif ($acao === 'salvar_usuario') {
+    (new UsuarioController())->salvar();
+
+} elseif ($acao === 'editar_usuario') {
+    (new UsuarioController())->editar();
+
+} elseif ($acao === 'atualizar_usuario') {
+    (new UsuarioController())->atualizar();
+
+} elseif ($acao === 'excluir_usuario') {
+    (new UsuarioController())->excluir();
+
+/* =========================
+   PROJETOS
+========================= */
+} elseif ($acao === 'projetos') {
+    (new ProjetoController())->listar();
+
+} elseif ($acao === 'cadastrar_projeto') {
+    (new ProjetoController())->abrirFormularioCadastro();
+
+} elseif ($acao === 'salvar_projeto') {
+    (new ProjetoController())->salvar();
+
+} elseif ($acao === 'editar_projeto') {
+    (new ProjetoController())->editar();
+
+} elseif ($acao === 'atualizar_projeto') {
+    (new ProjetoController())->atualizar();
+
+} elseif ($acao === 'excluir_projeto') {
+    (new ProjetoController())->excluir();
+
+/* =========================
+   LOGS
+========================= */
+} elseif ($acao === 'logs') {
+    (new LogController())->listar();
+
+} elseif ($acao === 'cadastrar_log') {
+    (new LogController())->abrirFormularioCadastro();
+
+} elseif ($acao === 'salvar_log') {
+    (new LogController())->salvar();
+
+/* =========================
+   FATURAS
+========================= */
+} elseif ($acao === 'faturas') {
+    (new FaturaController())->listar();
+
+} elseif ($acao === 'gerar_pagamento') {
+    (new FaturaController())->gerarPagamento($_GET['id']);
+
+} elseif ($acao === 'webhook_pagamento') {
+    (new PagamentoController())->webhook();
+
+} elseif ($acao === 'webhook_pagamento_mp') {
+    (new PagamentoController())->webhookMP();
+
+/* =========================
+   API LOGS
+========================= */
+} elseif ($acao === 'api_receber_log') {
+    (new ApiLogController())->receberLog();
+
+/* =========================
+   HOME (ÚNICA ENTRADA VISUAL)
+========================= */
+} elseif ($acao === 'home') {
+    require_once __DIR__ . '/../app/views/home.php';
+
+/* =========================
+   DEFAULT SE DER ERRO
+========================= */
+} else {
+    require_once __DIR__ . '/../app/views/home.php';
 }

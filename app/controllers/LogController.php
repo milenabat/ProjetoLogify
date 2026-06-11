@@ -11,6 +11,10 @@ class LogController
         $logs = $logModel->listarTodos();
 
         require_once __DIR__ . '/../views/logs/listar.php';
+
+        require_once __DIR__ . '/../core/AuthGuard.php';
+
+AuthGuard::usuario();
     }
 
     public function abrirFormularioCadastro()

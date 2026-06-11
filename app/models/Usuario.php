@@ -97,4 +97,17 @@ public function atualizarPlano($id_usuario, $plano)
 
     return $stmt->execute();
 }
+public function buscarPorEmail($email)
+{
+    global $conexao;
+
+    $sql = "SELECT * FROM usuarios WHERE email = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+
+    return $resultado->fetch_assoc();
+}
 }
