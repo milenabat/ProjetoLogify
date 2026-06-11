@@ -10,4 +10,8 @@
 
     <button type="submit">Entrar</button>
 
+    <div class="links-uteis">
+    <p>Ainda não tem uma conta? <a href="/ProjetoLogify/public/?acao=cadastrar_usuario">Cadastre-se aqui</a></p>
+</div>
+
 </form>

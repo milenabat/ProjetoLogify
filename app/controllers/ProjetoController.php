@@ -1,18 +1,26 @@
 <?php
+// app/controllers/ProjetoController.php
 
 require_once __DIR__ . '/../models/Projeto.php';
 require_once __DIR__ . '/../models/Usuario.php';
 require_once __DIR__ . '/../models/Log.php';
+require_once __DIR__ . '/../core/AuthGuard.php';
 
 class ProjetoController
 {
+    public function __construct()
+    {
+        // Bloqueia acessos de quem não é usuário comum logado
+        AuthGuard::usuario();
+    }
+
     public function listar()
     {
         $projetoModel = new Projeto();
         $projetos = $projetoModel->listarTodos();
-
         require_once __DIR__ . '/../views/projetos/listar.php';
     }
+
 
     public function abrirFormularioCadastro()
     {

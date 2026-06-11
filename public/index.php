@@ -15,10 +15,10 @@ require_once __DIR__ . '/../app/controllers/AuthController.php';
 /* =========================
    ROTA PADRÃO CORRETA
 ========================= */
-$acao = $_GET['acao'] ?? 'home';
+$acao = $_GET['acao'] ?? 'login';
 
 /* =========================
-   AUTH
+   AUTH E CADASTRO
 ========================= */
 if ($acao === 'login') {
     (new AuthController())->login();
@@ -32,6 +32,17 @@ if ($acao === 'autenticar') {
 
 if ($acao === 'logout') {
     (new AuthController())->logout();
+    exit;
+}
+
+// 🔥 Movemos o cadastro para cá! Antes que o PHP caia no 'else' lá do fundo
+if ($acao === 'cadastrar_usuario') {
+    (new AuthController())->cadastrar();
+    exit;
+}
+
+if ($acao === 'salvar_cadastro') {
+    (new AuthController())->salvarCadastro();
     exit;
 }
 
@@ -57,16 +68,10 @@ if ($acao === 'admin_comprovantes') {
 }
 
 /* =========================
-   USUÁRIO
+   GERENCIAMENTO DE USUÁRIOS
 ========================= */
 if ($acao === 'usuarios') {
     (new UsuarioController())->listar();
-
-} elseif ($acao === 'cadastrar_usuario') {
-    (new UsuarioController())->abrirFormularioCadastro();
-
-} elseif ($acao === 'salvar_usuario') {
-    (new UsuarioController())->salvar();
 
 } elseif ($acao === 'editar_usuario') {
     (new UsuarioController())->editar();
