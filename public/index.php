@@ -116,10 +116,17 @@ if ($acao === 'usuarios') {
     (new LogController())->salvar();
 
 /* =========================
-   FATURAS
+   FATURAS E PAGAMENTOS
 ========================= */
 } elseif ($acao === 'faturas') {
     (new FaturaController())->listar();
+
+// 👇 As duas rotas novas agrupadas no lugar certo
+} elseif ($acao === 'cadastrar_fatura') {
+    (new FaturaController())->abrirFormularioCadastro();
+
+} elseif ($acao === 'salvar_fatura') {
+    (new FaturaController())->salvar();
 
 } elseif ($acao === 'gerar_pagamento') {
     (new FaturaController())->gerarPagamento($_GET['id']);
@@ -129,6 +136,11 @@ if ($acao === 'usuarios') {
 
 } elseif ($acao === 'webhook_pagamento_mp') {
     (new PagamentoController())->webhookMP();
+    } elseif ($acao === 'enviar_comprovante') {
+    require_once __DIR__ . '/../app/views/faturas/enviar_comprovante.php';
+
+} elseif ($acao === 'salvar_comprovante') {
+    (new FaturaController())->salvarComprovante();
 
 /* =========================
    API LOGS
@@ -145,6 +157,7 @@ if ($acao === 'usuarios') {
 /* =========================
    DEFAULT SE DER ERRO
 ========================= */
+// O else absoluto, fechando a estrutura inteira!
 } else {
     require_once __DIR__ . '/../app/views/home.php';
 }

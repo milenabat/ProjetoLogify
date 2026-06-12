@@ -57,11 +57,14 @@ class Log
         return $logs;
     }
 
-    public function cadastrar($mensagem, $id_projeto)
+    // 🔥 Ajustado para receber o ID do projeto primeiro, o nível e a mensagem
+    public function cadastrar($id_projeto, $nivel, $mensagem)
     {
-        $sql = "INSERT INTO logs_erro (mensagem, id_projeto) VALUES (?, ?)";
+        $sql = "INSERT INTO logs_erro (id_projeto, nivel, mensagem) VALUES (?, ?, ?)";
         $stmt = $this->conexao->prepare($sql);
-        $stmt->bind_param("si", $mensagem, $id_projeto);
+        
+        // 'iss' significa: Integer, String, String
+        $stmt->bind_param("iss", $id_projeto, $nivel, $mensagem);
 
         return $stmt->execute();
     }

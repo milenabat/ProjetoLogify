@@ -1,25 +1,8 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 
-<header class="navbar-user" style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px;">
-    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
-        <h2 style="margin: 0; color: #f8fafc;">Logify</h2>
-        <span class="badge-plano" style="background: #38bdf8; color: black; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">
-            <?php echo htmlspecialchars($_SESSION['usuario']['plano'] ?? 'Free'); ?>
-        </span>
-    </div>
-    <nav>
-        <ul style="display: flex; list-style: none; gap: 20px; margin: 0; padding: 0;">
-            <li><a href="/ProjetoLogify/public/?acao=projetos" style="color: #38bdf8; text-decoration: none; font-weight: bold;">Meus Projetos</a></li>
-            <li><a href="/ProjetoLogify/public/?acao=logs" style="color: #cbd5e1; text-decoration: none;">Monitoramento</a></li>
-            <li><a href="/ProjetoLogify/public/?acao=faturas" style="color: #cbd5e1; text-decoration: none;">Financeiro</a></li>
-            <li><a href="/ProjetoLogify/public/?acao=logout" style="color: #ef4444; text-decoration: none; font-weight: bold;">Sair</a></li>
-        </ul>
-    </nav>
-</header>
-
 <main class="container-user">
     <div style="margin-bottom: 30px;">
-        <h1 style="color: #f8fafc; margin-bottom: 5px;">Olá, <?php echo htmlspecialchars($_SESSION['usuario']['nome'] ?? 'Usuário'); ?>!</h1>
+        <h1 style="color: #f8fafc; margin-bottom: 5px;">Olá, <?php echo htmlspecialchars($_SESSION['usuario']['nome'] ?? $_SESSION['admin']['nome'] ?? 'Usuário'); ?>!</h1>
         <p style="color: #94a3b8; margin-top: 0;">Aqui estão os seus projetos monitorados.</p>
     </div>
 

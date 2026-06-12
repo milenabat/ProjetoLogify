@@ -74,8 +74,6 @@ class Projeto
         return $stmt->execute();
     }
 
-
-
     public function buscarPorApiKey($api_key)
     {
         $sql = "SELECT * FROM projetos 
@@ -89,21 +87,20 @@ class Projeto
         $resultado = $stmt->get_result();
         return $resultado->fetch_assoc();
     }
+
     public function excluir($id)
-{
-    global $conexao;
+    {
+        // 🔥 1. apagar logs primeiro usando o padrão da classe
+        $sqlLogs = "DELETE FROM logs_erro WHERE id_projeto = ?";
+        $stmt = $this->conexao->prepare($sqlLogs);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
 
-    // 🔥 1. apagar logs primeiro
-    $sqlLogs = "DELETE FROM logs_erro WHERE id_projeto = ?";
-    $stmt = $conexao->prepare($sqlLogs);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+        // 🔥 2. depois apagar projeto
+        $sql = "DELETE FROM projetos WHERE id_projeto = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("i", $id);
 
-    // 🔥 2. depois apagar projeto
-    $sql = "DELETE FROM projetos WHERE id_projeto = ?";
-    $stmt = $conexao->prepare($sql);
-    $stmt->bind_param("i", $id);
-
-    return $stmt->execute();
-}
+        return $stmt->execute();
+    }
 }

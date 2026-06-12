@@ -12,12 +12,14 @@ class FaturaController
 
         require_once __DIR__ . '/../views/faturas/listar.php';
     }
-
-    public function abrirFormularioCadastro()
+public function abrirFormularioCadastro()
     {
+        // Tem que instanciar o UsuarioModel para buscar quem vai aparecer no <select>
+        require_once __DIR__ . '/../models/Usuario.php';
         $usuarioModel = new Usuario();
         $usuarios = $usuarioModel->listarTodos();
 
+        // Agora sim a view recebe a variável $usuarios cheia de dados!
         require_once __DIR__ . '/../views/faturas/cadastrar.php';
     }
 
@@ -211,7 +213,35 @@ class FaturaController
 
 $preference->auto_return = "approved";
 }
+public function salvarComprovante()
+    {
+        $id_fatura = $_POST['id_fatura'] ?? null;
+        $arquivo = $_FILES['comprovante'] ?? null;
 
+        if ($id_fatura && $arquivo && $arquivo['error'] === UPLOAD_ERR_OK) {
+            // Cria a pasta de uploads se ela não existir
+            $diretorio_destino = __DIR__ . '/../../public/uploads/';
+            if (!is_dir($diretorio_destino)) {
+                mkdir($diretorio_destino, 0777, true);
+            }
 
+            // Gera um nome único para o arquivo para não dar conflito
+            $extensao = pathinfo($arquivo['name'], PATHINFO_EXTENSION);
+            $nome_novo = "fatura_" . $id_fatura . "_" . time() . "." . $extensao;
+            $caminho_final = $diretorio_destino . $nome_novo;
+
+            // Move o arquivo da memória temporária do PHP para a nossa pasta
+            if (move_uploaded_file($arquivo['tmp_name'], $caminho_final)) {
+                
+                // Aqui você chamaria o seu FaturaModel para atualizar o status para 'Em Análise'
+                // Exemplo: $faturaModel->atualizarStatus($id_fatura, 'Em Análise', $nome_novo);
+
+                echo "<script>alert('Comprovante enviado com sucesso! O Administrador irá analisar.'); window.location.href='/ProjetoLogify/public/?acao=faturas';</script>";
+                return;
+            }
+        }
+
+        echo "<script>alert('Erro ao enviar o arquivo. Tente novamente.'); window.location.href='/ProjetoLogify/public/?acao=faturas';</script>";
+    }
 
 }
