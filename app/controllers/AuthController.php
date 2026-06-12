@@ -10,48 +10,44 @@ class AuthController
         require_once __DIR__ . '/../views/auth/login.php';
     }
 
-    public function autenticar()
+public function autenticar()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = $_POST['email'] ?? '';
+        $senha = $_POST['senha'] ?? '';
 
-            // Garante sessão ativa
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+        require_once __DIR__ . '/../models/Usuario.php';
+        $usuarioModel = new Usuario();
+        $user = $usuarioModel->buscarPorEmail($email);
 
-            $email = $_POST['email'] ?? '';
-            $senha = $_POST['senha'] ?? '';
+        if ($user && password_verify($senha, $user['senha'])) {
+            
+            // 🔥 A MÁGICA AQUI: Antes de logar o novo usuário, limpa qualquer "fantasma" que tenha ficado no navegador!
+            session_unset(); 
 
-            $usuarioModel = new Usuario();
-            $usuario = $usuarioModel->buscarPorEmail($email);
-
-            // 🔥 A MÁGICA DA SEGURANÇA: Usando password_verify
-            // Se o usuário não existir OU a senha não bater com a hash do banco, ele barra
-            if (!$usuario || !password_verify($senha, $usuario['senha'])) {
-                echo "Login inválido";
-                return;
-            }
-
-            // 🔥 separação admin / user
-            if ($usuario['tipo'] === 'admin') {
-                $_SESSION['admin'] = $usuario;
+            // Verifique se a sua coluna no banco se chama 'tipo', 'perfil', etc.
+            if ($user['tipo'] === 'admin') {
+                $_SESSION['admin'] = $user;
                 header("Location: /ProjetoLogify/public/?acao=admin_dashboard");
+                exit;
+            } else {
+                $_SESSION['usuario'] = $user;
+                header("Location: /ProjetoLogify/public/?acao=projetos");
                 exit;
             }
 
-            $_SESSION['usuario'] = $usuario;
-            header("Location: /ProjetoLogify/public/?acao=projetos");
+        } else {
+            echo "<script>alert('E-mail ou senha incorretos!'); window.location.href='/ProjetoLogify/public/?acao=login';</script>";
             exit;
         }
     }
 
     public function logout()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        session_destroy();
+        // 🔥 Limpeza TOTAL da memória do servidor
+        session_unset(); // Limpa as variáveis
+        session_destroy(); // Destrói a sessão inteira
+        
+        // Joga de volta pra tela de login
         header("Location: /ProjetoLogify/public/?acao=login");
         exit;
     }

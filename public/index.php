@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 
 /* =========================
@@ -141,6 +144,8 @@ if ($acao === 'usuarios') {
 
 } elseif ($acao === 'salvar_comprovante') {
     (new FaturaController())->salvarComprovante();
+    } elseif ($acao === 'gerar_fatura_upgrade') {
+    (new FaturaController())->gerarFaturaUpgrade();
 
 /* =========================
    API LOGS

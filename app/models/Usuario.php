@@ -106,21 +106,23 @@ class Usuario
 
     public function cadastrar($nome, $email, $senha)
     {
-        // Forçamos o tipo de conta como usuário comum e o plano inicial
         $tipo = 'user';
         $plano = 'Free'; 
         
-        // Criptografia nativa do PHP para não salvar senhas em texto puro
         $senha_criptografada = password_hash($senha, PASSWORD_DEFAULT);
 
-        // Sintaxe MySQLi usando pontos de interrogação
         $sql = "INSERT INTO usuarios (nome, email, senha, plano, tipo) VALUES (?, ?, ?, ?, ?)";
-        
         $stmt = $this->conexao->prepare($sql);
-        
-        // "sssss" indica que estamos passando 5 strings
         $stmt->bind_param("sssss", $nome, $email, $senha_criptografada, $plano, $tipo);
 
+        return $stmt->execute();
+    }
+
+    public function fazerUpgrade($id_usuario)
+    {
+        $sql = "UPDATE usuarios SET plano = 'Premium' WHERE id_usuario = ?";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
         return $stmt->execute();
     }
 }
